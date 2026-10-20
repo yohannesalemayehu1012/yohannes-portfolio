@@ -59,7 +59,7 @@ function App() {
           <a href="#projects">Projects</a>
           <a href="#tools">Tools</a>
         </nav>
-        <a className="contact-link" href="mailto:yohannes@example.com">
+        <a className="contact-link" href="mailto:hello@yohannes.dev">
           Contact
         </a>
       </header>
@@ -165,6 +165,16 @@ function App() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="contact-banner" aria-label="Contact call to action">
+          <div>
+            <p className="panel-kicker">Let’s build</p>
+            <h2>Need a product partner who can move from idea to launch?</h2>
+          </div>
+          <a className="primary-button" href="mailto:hello@yohannes.dev">
+            hello@yohannes.dev
+          </a>
         </section>
       </main>
     </div>

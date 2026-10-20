@@ -6,6 +6,7 @@
   background:
     radial-gradient(circle at top, rgba(59, 130, 246, 0.18), transparent 30%),
     linear-gradient(180deg, #020817 0%, #0f172a 100%);
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,6 +19,7 @@
 
 html {
   scroll-behavior: smooth;
+  background: #020817;
 }
 
 body {
@@ -28,7 +30,21 @@ body {
 }
 
 img {
+  display: block;
   max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
 }
 
 #root {
@@ -37,6 +53,7 @@ img {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 h1,
@@ -44,4 +61,24 @@ h2,
 h3,
 p {
   margin-top: 0;
+}
+
+::selection {
+  background: rgba(125, 211, 252, 0.3);
+  color: #f8fafc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
