@@ -1,184 +1,317 @@
-import heroImg from './assets/hero.png'
-import './App.css'
 
-const impactStats = [
-  { value: '6+', label: 'Years crafting interfaces' },
-  { value: '14', label: 'Launches shipped' },
-  { value: '92%', label: 'Repeat client rate' },
-]
+import { useState } from "react";
+import "./App.css";
 
-const capabilityGroups = [
+const projects = [
   {
-    title: 'Frontend',
-    items: ['React', 'TypeScript', 'Next.js', 'Vite', 'Tailwind'],
+    number: "01",
+    title: "Disease Prediction System",
+    category: "MACHINE LEARNING",
+    description:
+      "A machine learning application that analyzes medical data to predict potential health risks.",
+    technologies: ["Python", "Scikit-learn", "FastAPI"],
+    link: "https://github.com/",
   },
   {
-    title: 'Backend',
-    items: ['Node.js', 'Express', 'REST APIs', 'PostgreSQL', 'MongoDB'],
+    number: "02",
+    title: "School Management System",
+    category: "FULL-STACK DEVELOPMENT",
+    description:
+      "A web application for managing students, teachers, academic records, and school activities.",
+    technologies: ["ASP.NET Core", "C#", "SQL"],
+    link: "https://github.com/",
   },
   {
-    title: 'Workflow',
-    items: ['Design systems', 'Testing', 'CI/CD', 'Product strategy', 'UX reviews'],
+    number: "03",
+    title: "House Price Prediction",
+    category: "DATA SCIENCE",
+    description:
+      "A regression model that estimates house prices using property features and historical data.",
+    technologies: ["Python", "Pandas", "Flask"],
+    link: "https://github.com/",
   },
-]
+];
 
-const featuredProjects = [
-  {
-    name: 'Northstar Commerce',
-    summary:
-      'A conversion-focused storefront that paired performance tuning with an editorial shopping experience.',
-    tags: ['React', 'Stripe', 'Analytics'],
-    metric: '+38% revenue lift',
-  },
-  {
-    name: 'Signal Board',
-    summary:
-      'A real-time operations dashboard for cross-functional teams to track delivery, blockers, and status.',
-    tags: ['Node.js', 'WebSockets', 'Charts'],
-    metric: '4.8/5 avg. rating',
-  },
-  {
-    name: 'Luma Health',
-    summary:
-      'A patient-first portal helping clinics coordinate care journeys with fewer handoff errors.',
-    tags: ['UX Design', 'Accessibility', 'A/B testing'],
-    metric: '2x faster onboarding',
-  },
-]
+const skills = [
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "HTML & CSS",
+  "Node.js",
+  "Express",
+  "Python",
+  "Machine Learning",
+  "SQL",
+  "Git & GitHub",
+];
 
 function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <div className="portfolio-shell">
-      <header className="topbar">
-        <div className="brand-block">
-          <span className="brand-mark">Y</span>
-          <span>Yohannes</span>
-        </div>
-        <nav className="nav" aria-label="Main navigation">
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#tools">Tools</a>
+    <>
+      <header className="header">
+        <nav className="navbar container">
+          <a className="logo" href="#home" onClick={closeMenu}>
+            YA<span>.</span>
+          </a>
+
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-label="Toggle navigation"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+
+          <div className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
+            <a href="#home" onClick={closeMenu}>Home</a>
+            <a href="#about" onClick={closeMenu}>About</a>
+            <a href="#skills" onClick={closeMenu}>Skills</a>
+            <a href="#projects" onClick={closeMenu}>Projects</a>
+            <a href="#contact" onClick={closeMenu}>Contact</a>
+            <a
+              className="nav-cta"
+              href="mailto:hello@example.com"
+              onClick={closeMenu}
+            >
+              Let's Talk <span>↗</span>
+            </a>
+          </div>
         </nav>
-        <a className="contact-link" href="mailto:hello@yohannes.dev">
-          Contact
-        </a>
       </header>
 
-      <main className="portfolio-page">
-        <section className="hero-section" id="about">
-          <div className="hero-copy">
-            <p className="eyebrow">Full-stack product engineer</p>
-            <h1>Building thoughtful digital products that move people and businesses forward.</h1>
-            <p className="lead">
-              I’m Yohannes, a developer focused on turning ambitious ideas into polished, user-centered experiences.
-              My work blends product thinking, clean engineering, and measurable business impact.
+      <main>
+        <section className="hero container" id="home">
+          <div className="hero-content">
+            <div className="availability">
+              <span className="status-dot" />
+              SOFTWARE ENGINEERING STUDENT
+            </div>
+
+            <p className="eyebrow">HELLO, I'M</p>
+
+            <h1>
+              Yohannes
+              <br />
+              <span>Alemayehu.</span>
+            </h1>
+
+            <h2>
+              I build digital experiences
+              <br />
+              <span>for the real world.</span>
+            </h2>
+
+            <p className="hero-description">
+              I'm a software engineering student passionate about full-stack
+              development, machine learning, and creating useful digital
+              products through clean and thoughtful code.
             </p>
-            <div className="cta-row">
-              <a className="primary-button" href="#projects">
-                View my work
+
+            <div className="hero-actions">
+              <a className="button button-primary" href="#projects">
+                Explore My Work <span>↗</span>
               </a>
-              <a className="secondary-button" href="#tools">
-                My stack
+              <a className="button button-secondary" href="#contact">
+                Get In Touch
               </a>
             </div>
-            <ul className="stat-list" aria-label="Key stats">
-              {impactStats.map((stat) => (
-                <li key={stat.label}>
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </li>
-              ))}
-            </ul>
+
+            <div className="hero-meta">
+              <span><span className="meta-symbol">⌘</span> Software Engineering</span>
+              <span><span className="meta-symbol">◎</span> Always Learning</span>
+            </div>
           </div>
 
-          <div className="hero-visual" aria-label="Profile preview">
-            <div className="portrait-card">
-              <img src={heroImg} alt="Portrait illustration" />
-            </div>
-            <div className="floating-card">
-              <span className="status-dot" aria-hidden="true"></span>
-              <div>
-                <strong>Open for select collaborations</strong>
-                <small>Product design + engineering</small>
+          <div className="hero-visual" aria-label="Decorative code illustration">
+            <div className="orbit orbit-one" />
+            <div className="orbit orbit-two" />
+
+            <div className="code-card">
+              <div className="code-card-header">
+                <div className="window-dots">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <span>developer.ts</span>
+                <span className="code-menu">•••</span>
+              </div>
+
+              <div className="code-content">
+                <p><span className="line-number">01</span> <span className="code-purple">const</span> developer = {"{"}</p>
+                <p><span className="line-number">02</span> &nbsp; name: <span className="code-green">"Yohannes"</span>,</p>
+                <p><span className="line-number">03</span> &nbsp; role: <span className="code-green">"Developer"</span>,</p>
+                <p><span className="line-number">04</span> &nbsp; passion: <span className="code-green">"Building"</span>,</p>
+                <p><span className="line-number">05</span> &nbsp; learning: <span className="code-blue">true</span>,</p>
+                <p><span className="line-number">06</span> {"};"}</p>
+                <p className="code-comment">// Turning ideas into reality.</p>
+              </div>
+
+              <div className="code-card-footer">
+                <span><span className="status-dot" /> Ready to build</span>
+                <span>TypeScript</span>
               </div>
             </div>
+
+            <div className="floating-card floating-top">
+              <span className="floating-icon">{"</>"}</span>
+              <div>
+                <strong>Clean Code</strong>
+                <small>Built with purpose</small>
+              </div>
+            </div>
+
+            <div className="floating-card floating-bottom">
+              <span className="floating-icon purple-icon">✳</span>
+              <div>
+                <strong>Creative Thinking</strong>
+                <small>Ideas into solutions</small>
+              </div>
+            </div>
+
+            <div className="visual-label">DESIGN · DEVELOP · DELIVER</div>
           </div>
+
+          <a className="scroll-indicator" href="#about">
+            <span className="scroll-line" />
+            SCROLL TO EXPLORE
+          </a>
         </section>
 
-        <section className="showcase-grid">
-          <article className="info-panel">
-            <p className="panel-kicker">Approach</p>
-            <h2>Product thinking, without sacrificing craft.</h2>
-            <p>
-              I enjoy bridging the gap between user needs, business goals, and a maintainable technical foundation.
-            </p>
-          </article>
-          <article className="info-panel accent-panel">
-            <p className="panel-kicker">Focus</p>
-            <h2>Design systems, dashboards, and customer experiences.</h2>
-            <p>
-              Whether it’s a landing page, internal tool, or full platform, I build with clarity, speed, and scalability in mind.
-            </p>
-          </article>
-        </section>
-
-        <section className="projects-section" id="projects">
+        <section className="about section container" id="about">
           <div className="section-heading">
-            <p className="eyebrow">Selected work</p>
-            <h2>Projects with measurable outcomes.</h2>
+            <p className="eyebrow">01 / ABOUT ME</p>
+            <h2>
+              Curious mind.
+              <br />
+              <span>Builder at heart.</span>
+            </h2>
           </div>
 
-          <div className="project-grid">
-            {featuredProjects.map((project) => (
-              <article className="project-card" key={project.name}>
-                <div className="project-meta">
-                  <span className="project-badge">Case study</span>
-                  <span className="project-metric">{project.metric}</span>
+          <div className="about-content">
+            <p>
+              I enjoy solving problems and turning ideas into practical
+              software. My interests span frontend development, backend
+              engineering, and applied artificial intelligence.
+            </p>
+            <p>
+              My goal is to build reliable, accessible, and meaningful
+              applications while continuously improving my engineering skills.
+            </p>
+            <a className="text-link" href="#contact">
+              Let's work together <span>↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section className="skills section container" id="skills">
+          <div className="section-heading">
+            <p className="eyebrow">02 / MY TOOLKIT</p>
+            <h2>Technologies I <span>work with.</span></h2>
+            <p className="section-description">
+              Tools and technologies I'm learning and using to build software.
+            </p>
+          </div>
+
+          <div className="skills-grid">
+            {skills.map((skill, index) => (
+              <div className="skill-card" key={skill}>
+                <span className="skill-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span>{skill}</span>
+                <span className="skill-arrow">↗</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="projects section container" id="projects">
+          <div className="projects-heading">
+            <div className="section-heading">
+              <p className="eyebrow">03 / SELECTED WORK</p>
+              <h2>Projects with <span>purpose.</span></h2>
+            </div>
+            <p className="projects-intro">
+              A selection of projects that reflect my interest in solving
+              real problems through software and data.
+            </p>
+          </div>
+
+          <div className="projects-grid">
+            {projects.map((project) => (
+              <article className="project-card" key={project.number}>
+                <div className="project-card-top">
+                  <span className="project-number">{project.number}</span>
+                  <span className="project-category">{project.category}</span>
                 </div>
-                <h3>{project.name}</h3>
-                <p>{project.summary}</p>
-                <ul className="tag-list" aria-label={`${project.name} technology stack`}>
-                  {project.tags.map((tag) => (
-                    <li key={tag}>{tag}</li>
+
+                <div className="project-visual">
+                  <span className="project-visual-bracket">{"<"}</span>
+                  <span className="project-visual-name">
+                    {project.title.split(" ").map((word) => word[0]).join("")}
+                  </span>
+                  <span className="project-visual-bracket">{"/>"}</span>
+                  <div className="project-visual-circle" />
+                </div>
+
+                <h3>{project.title}</h3>
+                <p className="project-description">{project.description}</p>
+
+                <div className="technology-list">
+                  {project.technologies.map((technology) => (
+                    <span key={technology}>{technology}</span>
                   ))}
-                </ul>
+                </div>
+
+                <a
+                  className="project-link"
+                  href={project.link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Explore project <span>↗</span>
+                </a>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="tools-section" id="tools">
-          <div className="section-heading">
-            <p className="eyebrow">Toolbox</p>
-            <h2>Capabilities across product teams.</h2>
+        <section className="contact section container" id="contact">
+          <div className="contact-panel">
+            <p className="eyebrow">04 / GET IN TOUCH</p>
+            <h2>
+              Have an idea?
+              <br />
+              <span>Let's build it.</span>
+            </h2>
+            <p>
+              I'm interested in meaningful projects, collaboration, and
+              opportunities to learn and grow as a developer.
+            </p>
+            <a
+              className="button button-primary"
+              href="mailto:hello@example.com"
+            >
+              Send Me an Email <span>↗</span>
+            </a>
           </div>
-
-          <div className="tool-grid">
-            {capabilityGroups.map((group) => (
-              <div className="tool-card" key={group.title}>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="contact-banner" aria-label="Contact call to action">
-          <div>
-            <p className="panel-kicker">Let’s build</p>
-            <h2>Need a product partner who can move from idea to launch?</h2>
-          </div>
-          <a className="primary-button" href="mailto:hello@yohannes.dev">
-            hello@yohannes.dev
-          </a>
         </section>
       </main>
-    </div>
-  )
+
+      <footer className="footer container">
+        <a className="logo" href="#home">YA<span>.</span></a>
+        <p>Designed & built with care.</p>
+        <p>© {new Date().getFullYear()} Yohannes Alemayehu</p>
+      </footer>
+    </>
+  );
 }
 
-export default App
+export default App;

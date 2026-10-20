@@ -1,16 +1,23 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #e2e8f0;
-  background:
-    radial-gradient(circle at top, rgba(59, 130, 246, 0.18), transparent 30%),
-    linear-gradient(180deg, #020817 0%, #0f172a 100%);
-  color-scheme: dark;
+  font-family: 'Inter', sans-serif;
+  color: #edf2ff;
+  background: #080d19;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --background: #080d19;
+  --surface: #0e1627;
+  --surface-light: #131e32;
+  --text: #edf2ff;
+  --muted: #929eb5;
+  --blue: #5c8dff;
+  --cyan: #5ee7f5;
+  --border: rgba(148, 163, 184, 0.15);
 }
 
 * {
@@ -19,36 +26,24 @@
 
 html {
   scroll-behavior: smooth;
-  background: #020817;
+  scroll-padding-top: 90px;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: transparent;
 }
 
-img {
-  display: block;
-  max-width: 100%;
+body,
+button,
+a {
+  font-family: 'Inter', sans-serif;
 }
 
 button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-ul,
-ol {
-  margin: 0;
-  padding: 0;
-}
-
-#root {
-  min-height: 100vh;
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -56,29 +51,55 @@ a {
   text-decoration: none;
 }
 
-h1,
-h2,
-h3,
-p {
-  margin-top: 0;
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
 }
 
 ::selection {
-  background: rgba(125, 211, 252, 0.3);
-  color: #f8fafc;
+  color: white;
+  background: #315fce;
+}
+
+.container {
+  width: min(1120px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: 112px;
+}
+
+.eyebrow {
+  color: var(--cyan);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  line-height: 1.8;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: calc(100% - 36px);
+  }
+
+  .section {
+    padding-block: 76px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
