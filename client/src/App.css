@@ -835,6 +835,21 @@
   }
 }
 
+.project-status {
+  grid-column: 1 / -1;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.project-error {
+  border-color: rgba(255, 100, 120, 0.35);
+}
+
 @media (max-width: 380px) {
   .hero-meta {
     gap: 12px;

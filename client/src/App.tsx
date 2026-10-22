@@ -1,36 +1,7 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getProjects, type Project } from "./services/projectService";
 import "./App.css";
-
-const projects = [
-  {
-    number: "01",
-    title: "Disease Prediction System",
-    category: "MACHINE LEARNING",
-    description:
-      "A machine learning application that analyzes medical data to predict potential health risks.",
-    technologies: ["Python", "Scikit-learn", "FastAPI"],
-    link: "https://github.com/",
-  },
-  {
-    number: "02",
-    title: "School Management System",
-    category: "FULL-STACK DEVELOPMENT",
-    description:
-      "A web application for managing students, teachers, academic records, and school activities.",
-    technologies: ["ASP.NET Core", "C#", "SQL"],
-    link: "https://github.com/",
-  },
-  {
-    number: "03",
-    title: "House Price Prediction",
-    category: "DATA SCIENCE",
-    description:
-      "A regression model that estimates house prices using property features and historical data.",
-    technologies: ["Python", "Pandas", "Flask"],
-    link: "https://github.com/",
-  },
-];
 
 const skills = [
   "JavaScript",
@@ -47,6 +18,42 @@ const skills = [
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [projectError, setProjectError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProjects() {
+      try {
+        const data = await getProjects();
+
+        if (active) {
+          setProjects(data);
+        }
+      } catch (error) {
+        if (active) {
+          setProjectError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load projects."
+          );
+        }
+      } finally {
+        if (active) {
+          setLoadingProjects(false);
+        }
+      }
+    }
+
+    void loadProjects();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -245,41 +252,71 @@ function App() {
           </div>
 
           <div className="projects-grid">
-            {projects.map((project) => (
-              <article className="project-card" key={project.number}>
-                <div className="project-card-top">
-                  <span className="project-number">{project.number}</span>
-                  <span className="project-category">{project.category}</span>
-                </div>
-
-                <div className="project-visual">
-                  <span className="project-visual-bracket">{"<"}</span>
-                  <span className="project-visual-name">
-                    {project.title.split(" ").map((word) => word[0]).join("")}
-                  </span>
-                  <span className="project-visual-bracket">{"/>"}</span>
-                  <div className="project-visual-circle" />
-                </div>
-
-                <h3>{project.title}</h3>
-                <p className="project-description">{project.description}</p>
-
-                <div className="technology-list">
-                  {project.technologies.map((technology) => (
-                    <span key={technology}>{technology}</span>
-                  ))}
-                </div>
-
-                <a
-                  className="project-link"
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
+            {loadingProjects ? (
+              <p className="project-status" role="status">
+                Loading projects...
+              </p>
+            ) : projectError ? (
+              <div className="project-status project-error" role="alert">
+                <p>We couldn't load the projects.</p>
+                <p>{projectError}</p>
+                <button
+                  className="retry-button"
+                  onClick={() => window.location.reload()}
                 >
-                  Explore project <span>↗</span>
-                </a>
-              </article>
-            ))}
+                  Try again
+                </button>
+              </div>
+            ) : projects.length === 0 ? (
+              <p className="project-status">
+                No projects have been published yet.
+              </p>
+            ) : (
+              projects.map((project) => (
+                <article className="project-card" key={project.id}>
+                  <div className="project-card-top">
+                    <span className="project-number">
+                      {String(project.id).padStart(2, "0")}
+                    </span>
+                    <span className="project-category">
+                      {project.category}
+                    </span>
+                  </div>
+
+                  <div className="project-visual">
+                    <span className="project-visual-bracket">{"<"}</span>
+                    <span className="project-visual-name">
+                      {project.title
+                        .split(" ")
+                        .map((word) => word[0])
+                        .join("")}
+                    </span>
+                    <span className="project-visual-bracket">{"/>"}</span>
+                    <div className="project-visual-circle" />
+                  </div>
+
+                  <h3>{project.title}</h3>
+                  <p className="project-description">
+                    {project.description}
+                  </p>
+
+                  <div className="technology-list">
+                    {project.technologies.map((technology) => (
+                      <span key={technology}>{technology}</span>
+                    ))}
+                  </div>
+
+                  <a
+                    className="project-link"
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Explore project <span>↗</span>
+                  </a>
+                </article>
+              ))
+            )}
           </div>
         </section>
 
