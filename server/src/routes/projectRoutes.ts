@@ -1,20 +1,66 @@
+
 import { Router } from "express";
-import { projects } from "../data/projects.js";
+import { db } from "../db.js";
 
 const router = Router();
 
+interface ProjectRow {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  technologies: string;
+  githubUrl: string;
+  featured: number;
+}
+
+interface Project {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  technologies: string[];
+  githubUrl: string;
+  featured: boolean;
+}
+
+function formatProject(row: ProjectRow): Project {
+  return {
+    id: row.id,
+    title: row.title,
+    category: row.category,
+    description: row.description,
+    technologies: JSON.parse(row.technologies) as string[],
+    githubUrl: row.githubUrl,
+    featured: row.featured === 1,
+  };
+}
+
 // GET /api/projects
-// Return all portfolio projects.
 router.get("/", (_req, res) => {
-  res.status(200).json({
-    success: true,
-    count: projects.length,
-    data: projects,
-  });
+  try {
+    const rows = db
+      .prepare("SELECT * FROM projects ORDER BY id ASC")
+      .all() as ProjectRow[];
+
+    const projects = rows.map(formatProject);
+
+    res.status(200).json({
+      success: true,
+      count: projects.length,
+      data: projects,
+    });
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve projects.",
+    });
+  }
 });
 
 // GET /api/projects/:id
-// Return one project by its ID.
 router.get("/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -26,20 +72,31 @@ router.get("/:id", (req, res) => {
     return;
   }
 
-  const project = projects.find((item) => item.id === id);
+  try {
+    const row = db
+      .prepare("SELECT * FROM projects WHERE id = ?")
+      .get(id) as ProjectRow | undefined;
 
-  if (!project) {
-    res.status(404).json({
-      success: false,
-      message: "Project not found.",
+    if (!row) {
+      res.status(404).json({
+        success: false,
+        message: "Project not found.",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: formatProject(row),
     });
-    return;
-  }
+  } catch (error) {
+    console.error("Failed to fetch project:", error);
 
-  res.status(200).json({
-    success: true,
-    data: project,
-  });
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve the project.",
+    });
+  }
 });
 
 export default router;

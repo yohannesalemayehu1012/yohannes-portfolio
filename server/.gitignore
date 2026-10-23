@@ -1,0 +1,9 @@
+
+node_modules/
+dist/
+.env
+
+# Local SQLite database and temporary journal files
+portfolio.db
+portfolio.db-shm
+portfolio.db-wal
