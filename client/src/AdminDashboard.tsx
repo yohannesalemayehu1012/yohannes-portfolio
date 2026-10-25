@@ -1,14 +1,27 @@
 
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getProjects, type Project } from "./services/projectService";
 import "./AdminDashboard.css";
+import { logout } from "./services/authService";
 
 function AdminDashboard() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+
+  async function handleLogout() {
+    try {
+      await logout();
+      navigate("/admin/login", { replace: true });
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Unable to log out.",
+      );
+    }
+  }
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
@@ -66,6 +79,14 @@ function AdminDashboard() {
             <span>⚙</span> Settings
           </a>
         </nav>
+
+        <button
+          type="button"
+          className="admin-logout-button"
+          onClick={() => void handleLogout()}
+        >
+          <span aria-hidden="true">↪</span> Log out
+        </button>
 
         <div className="admin-sidebar-bottom">
           <span className="admin-avatar">YA</span>

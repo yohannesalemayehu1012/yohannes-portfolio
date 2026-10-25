@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -58,8 +59,8 @@ function formatProject(row: ProjectRow): Project {
   };
 }
 
-function parseProjectId(value: string): number | null {
-  if (!/^[1-9]\d*$/.test(value)) {
+function parseProjectId(value: unknown): number | null {
+  if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) {
     return null;
   }
 
@@ -136,7 +137,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST /api/projects
-router.post("/", (req, res) => {
+router.post("/", requireAdmin, (req, res) => {
   const result = validateProject(req.body);
 
   if (!result.success) {
@@ -192,7 +193,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /api/projects/:id
-router.put("/:id", (req, res) => {
+router.put("/:id", requireAdmin, (req, res) => {
   const id = parseProjectId(req.params.id);
 
   if (id === null) {
@@ -267,7 +268,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE /api/projects/:id
-router.delete("/:id", (req, res) => {
+router.delete("/:id", requireAdmin, (req, res) => {
   const id = parseProjectId(req.params.id);
 
   if (id === null) {

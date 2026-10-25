@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db.js";
+import { requireAdmin } from "../middleware/auth.js";
 const router = Router();
 const projectSchema = z.object({
     title: z.string().trim().min(2).max(100),
@@ -30,7 +31,7 @@ function formatProject(row) {
     };
 }
 function parseProjectId(value) {
-    if (!/^[1-9]\d*$/.test(value)) {
+    if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) {
         return null;
     }
     const id = Number(value);
@@ -95,7 +96,7 @@ router.get("/:id", (req, res) => {
     }
 });
 // POST /api/projects
-router.post("/", (req, res) => {
+router.post("/", requireAdmin, (req, res) => {
     const result = validateProject(req.body);
     if (!result.success) {
         res.status(400).json({
@@ -137,7 +138,7 @@ router.post("/", (req, res) => {
     }
 });
 // PUT /api/projects/:id
-router.put("/:id", (req, res) => {
+router.put("/:id", requireAdmin, (req, res) => {
     const id = parseProjectId(req.params.id);
     if (id === null) {
         res.status(400).json({
@@ -194,7 +195,7 @@ router.put("/:id", (req, res) => {
     }
 });
 // DELETE /api/projects/:id
-router.delete("/:id", (req, res) => {
+router.delete("/:id", requireAdmin, (req, res) => {
     const id = parseProjectId(req.params.id);
     if (id === null) {
         res.status(400).json({
