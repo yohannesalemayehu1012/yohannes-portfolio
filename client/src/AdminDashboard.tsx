@@ -1,27 +1,41 @@
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getProjects, type Project } from "./services/projectService";
-import "./AdminDashboard.css";
+import {
+  createProject,
+  deleteProject,
+  getProjects,
+  updateProject,
+  type Project,
+  type ProjectInput,
+} from "./services/projectService";
 import { logout } from "./services/authService";
+import "./AdminDashboard.css";
+
+const emptyForm: ProjectInput = {
+  title: "",
+  category: "",
+  description: "",
+  technologies: [],
+  githubUrl: "",
+  featured: false,
+};
 
 function AdminDashboard() {
   const navigate = useNavigate();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
 
-  async function handleLogout() {
-    try {
-      await logout();
-      navigate("/admin/login", { replace: true });
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Unable to log out.",
-      );
-    }
-  }
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [form, setForm] = useState<ProjectInput>(emptyForm);
+  const [technologyText, setTechnologyText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
@@ -31,15 +45,18 @@ function AdminDashboard() {
       const data = await getProjects();
       setProjects(data);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to load projects.",
-      );
+      const message =
+        err instanceof Error ? err.message : "Unable to load projects.";
+
+      setError(message);
+
+      if (message.toLowerCase().includes("authentication")) {
+        navigate("/admin/login", { replace: true });
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     void loadProjects();
@@ -54,16 +71,145 @@ function AdminDashboard() {
     );
   });
 
-  const featuredCount = projects.filter(
-    (project) => project.featured,
-  ).length;
+  const featuredCount = projects.filter((project) => project.featured).length;
+
+  function openCreateForm() {
+    setEditingProject(null);
+    setForm({ ...emptyForm });
+    setTechnologyText("");
+    setError("");
+    setNotice("");
+    setFormOpen(true);
+  }
+
+  function openEditForm(project: Project) {
+    setEditingProject(project);
+    setForm({
+      title: project.title,
+      category: project.category,
+      description: project.description,
+      technologies: project.technologies,
+      githubUrl: project.githubUrl,
+      featured: project.featured,
+    });
+    setTechnologyText(project.technologies.join(", "));
+    setError("");
+    setNotice("");
+    setFormOpen(true);
+  }
+
+  function closeForm() {
+    if (saving) return;
+
+    setFormOpen(false);
+    setEditingProject(null);
+    setForm({ ...emptyForm });
+    setTechnologyText("");
+  }
+
+  function updateField<K extends keyof ProjectInput>(
+    field: K,
+    value: ProjectInput[K],
+  ) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+
+    const technologies = technologyText
+      .split(",")
+      .map((technology) => technology.trim())
+      .filter(Boolean);
+
+    if (technologies.length === 0) {
+      setError("Enter at least one technology, separated by commas.");
+      return;
+    }
+
+    const payload: ProjectInput = {
+      ...form,
+      title: form.title.trim(),
+      category: form.category.trim(),
+      description: form.description.trim(),
+      githubUrl: form.githubUrl.trim(),
+      technologies,
+    };
+
+    setSaving(true);
+
+    try {
+      if (editingProject) {
+        await updateProject(editingProject.id, payload);
+        setNotice("Project updated successfully.");
+      } else {
+        await createProject(payload);
+        setNotice("Project created successfully.");
+      }
+
+      setFormOpen(false);
+      setEditingProject(null);
+      setForm({ ...emptyForm });
+      setTechnologyText("");
+
+      await loadProjects();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to save project.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(project: Project) {
+    const confirmed = window.confirm(
+      `Delete "${project.title}"? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    setError("");
+    setNotice("");
+    setDeletingId(project.id);
+
+    try {
+      await deleteProject(project.id);
+      setNotice(`"${project.title}" was deleted.`);
+      setProjects((current) =>
+        current.filter((item) => item.id !== project.id),
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unable to delete project.";
+
+      setError(message);
+
+      if (message.toLowerCase().includes("authentication")) {
+        navigate("/admin/login", { replace: true });
+      }
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await logout();
+      navigate("/admin/login", { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to log out.");
+    }
+  }
 
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <Link to="/" className="admin-brand">
           <span className="admin-brand-mark">Y.</span>
-          <span>Portfolio<span className="admin-brand-dot">.</span></span>
+          <span>
+            Portfolio<span className="admin-brand-dot">.</span>
+          </span>
         </Link>
 
         <p className="admin-sidebar-label">WORKSPACE</p>
@@ -92,7 +238,7 @@ function AdminDashboard() {
           <span className="admin-avatar">YA</span>
           <div>
             <strong>Portfolio Admin</strong>
-            <small>Authentication pending</small>
+            <small>Authenticated session</small>
           </div>
         </div>
       </aside>
@@ -114,11 +260,10 @@ function AdminDashboard() {
             <p className="admin-eyebrow">YOUR CONTROL CENTER</p>
             <h2>Manage your work.</h2>
             <p>
-              Review your portfolio projects and keep track of
-              what you've published.
+              Create, update, and organize the projects displayed on your
+              public portfolio.
             </p>
           </div>
-
           <div className="admin-welcome-symbol">{"{ }"}</div>
         </section>
 
@@ -138,26 +283,42 @@ function AdminDashboard() {
           <article className="admin-stat-card">
             <span className="admin-stat-label">API status</span>
             <strong className="admin-status-value">
-              {loading ? "Checking" : error ? "Error" : "Connected"}
+              {loading ? "Checking" : error ? "Check API" : "Connected"}
             </strong>
-            <span className="admin-stat-note">
-              {error ? "Check the backend server" : "Project API response"}
-            </span>
+            <span className="admin-stat-note">Project API response</span>
           </article>
         </section>
+
+        {notice && (
+          <div className="admin-feedback admin-feedback-success" role="status">
+            {notice}
+            <button type="button" onClick={() => setNotice("")} aria-label="Dismiss message">
+              ×
+            </button>
+          </div>
+        )}
+
+        {error && !formOpen && (
+          <div className="admin-feedback admin-feedback-error" role="alert">
+            {error}
+            <button type="button" onClick={() => setError("")} aria-label="Dismiss error">
+              ×
+            </button>
+          </div>
+        )}
 
         <section id="projects" className="admin-projects-section">
           <div className="admin-section-heading">
             <div>
               <p className="admin-eyebrow">CONTENT MANAGEMENT</p>
               <h2>Projects</h2>
-              <p>View and search your portfolio projects.</p>
+              <p>Manage the work visitors see on your portfolio.</p>
             </div>
 
             <button
+              type="button"
               className="admin-primary-button"
-              disabled
-              title="Available after admin authentication is implemented"
+              onClick={openCreateForm}
             >
               + Add project
             </button>
@@ -176,6 +337,7 @@ function AdminDashboard() {
             </label>
 
             <button
+              type="button"
               className="admin-secondary-button"
               onClick={() => void loadProjects()}
               disabled={loading}
@@ -189,11 +351,12 @@ function AdminDashboard() {
               <p className="admin-message" role="status">
                 Loading projects...
               </p>
-            ) : error ? (
+            ) : error && projects.length === 0 ? (
               <div className="admin-message admin-message-error" role="alert">
                 <p>Unable to load projects.</p>
                 <p>{error}</p>
                 <button
+                  type="button"
                   className="admin-secondary-button"
                   onClick={() => void loadProjects()}
                 >
@@ -201,9 +364,7 @@ function AdminDashboard() {
                 </button>
               </div>
             ) : filteredProjects.length === 0 ? (
-              <p className="admin-message">
-                No matching projects found.
-              </p>
+              <p className="admin-message">No matching projects found.</p>
             ) : (
               <table className="admin-table">
                 <thead>
@@ -220,9 +381,7 @@ function AdminDashboard() {
                     <tr key={project.id}>
                       <td>
                         <div className="admin-project-name">
-                          <span className="admin-project-icon">
-                            {"</>"}
-                          </span>
+                          <span className="admin-project-icon">{"</>"}</span>
                           <div>
                             <strong>{project.title}</strong>
                             <small>
@@ -238,9 +397,7 @@ function AdminDashboard() {
                             <span key={tech}>{tech}</span>
                           ))}
                           {project.technologies.length > 3 && (
-                            <span>
-                              +{project.technologies.length - 3}
-                            </span>
+                            <span>+{project.technologies.length - 3}</span>
                           )}
                         </div>
                       </td>
@@ -256,18 +413,20 @@ function AdminDashboard() {
                       <td>
                         <div className="admin-row-actions">
                           <button
-                            disabled
-                            title="Available after admin authentication is implemented"
+                            type="button"
+                            onClick={() => openEditForm(project)}
+                            disabled={deletingId !== null}
                             aria-label={`Edit ${project.title}`}
                           >
                             Edit
                           </button>
                           <button
-                            disabled
-                            title="Available after admin authentication is implemented"
+                            type="button"
+                            onClick={() => void handleDelete(project)}
+                            disabled={deletingId !== null}
                             aria-label={`Delete ${project.title}`}
                           >
-                            Delete
+                            {deletingId === project.id ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </td>
@@ -285,20 +444,140 @@ function AdminDashboard() {
           )}
         </section>
 
+        {formOpen && (
+          <div className="admin-modal-backdrop">
+            <section
+              className="admin-project-form-card"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-form-title"
+            >
+              <div className="admin-form-heading">
+                <div>
+                  <p className="admin-eyebrow">PROJECT MANAGEMENT</p>
+                  <h2 id="project-form-title">
+                    {editingProject ? "Edit project" : "Add project"}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  className="admin-close-button"
+                  onClick={closeForm}
+                  disabled={saving}
+                  aria-label="Close form"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form className="admin-project-form" onSubmit={handleSubmit}>
+                <label htmlFor="project-title">Project title</label>
+                <input
+                  id="project-title"
+                  value={form.title}
+                  onChange={(event) => updateField("title", event.target.value)}
+                  minLength={2}
+                  maxLength={100}
+                  required
+                />
+
+                <label htmlFor="project-category">Category</label>
+                <input
+                  id="project-category"
+                  value={form.category}
+                  onChange={(event) => updateField("category", event.target.value)}
+                  minLength={2}
+                  maxLength={60}
+                  placeholder="Full-Stack Development"
+                  required
+                />
+
+                <label htmlFor="project-description">Description</label>
+                <textarea
+                  id="project-description"
+                  value={form.description}
+                  onChange={(event) => updateField("description", event.target.value)}
+                  minLength={10}
+                  maxLength={1000}
+                  rows={4}
+                  required
+                />
+
+                <label htmlFor="project-technologies">
+                  Technologies (separate with commas)
+                </label>
+                <input
+                  id="project-technologies"
+                  value={technologyText}
+                  onChange={(event) => setTechnologyText(event.target.value)}
+                  placeholder="React, TypeScript, Express"
+                  required
+                />
+
+                <label htmlFor="project-github">Project URL</label>
+                <input
+                  id="project-github"
+                  type="url"
+                  value={form.githubUrl}
+                  onChange={(event) => updateField("githubUrl", event.target.value)}
+                  placeholder="https://github.com/your-account/project"
+                  maxLength={2048}
+                  required
+                />
+
+                <label className="admin-featured-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(event) => updateField("featured", event.target.checked)}
+                  />
+                  Mark this project as featured
+                </label>
+
+                {error && (
+                  <p className="admin-form-error" role="alert">{error}</p>
+                )}
+
+                <div className="admin-form-actions">
+                  <button
+                    type="button"
+                    className="admin-secondary-button"
+                    onClick={closeForm}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="admin-primary-button"
+                    disabled={saving}
+                  >
+                    {saving
+                      ? "Saving..."
+                      : editingProject
+                        ? "Save changes"
+                        : "Create project"}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
         <section id="settings" className="admin-security-notice">
-          <span className="admin-security-icon">!</span>
+          <span className="admin-security-icon">✓</span>
           <div>
-            <strong>Admin security setup is the next step</strong>
+            <strong>Admin authentication enabled</strong>
             <p>
-              Project changes are disabled until login and API
-              authorization are implemented.
+              Project changes are sent to the API with your authentication
+              cookie and validated by the backend.
             </p>
           </div>
         </section>
 
         <footer className="admin-footer">
           <span>© {new Date().getFullYear()} Portfolio Dashboard</span>
-          <span>Built with React + TypeScript</span>
+          <span>React + TypeScript + SQLite</span>
         </footer>
       </main>
     </div>
