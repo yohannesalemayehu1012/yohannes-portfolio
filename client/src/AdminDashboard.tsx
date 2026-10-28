@@ -218,6 +218,9 @@ function AdminDashboard() {
           <a href="#overview" className="admin-nav-item active">
             <span>▦</span> Overview
           </a>
+          <Link to="/admin/messages" className="admin-nav-item">
+            Messages
+          </Link>
           <a href="#projects" className="admin-nav-item">
             <span>▤</span> Projects
           </a>

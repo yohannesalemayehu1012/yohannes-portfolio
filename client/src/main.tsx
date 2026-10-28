@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import AdminDashboard from "./AdminDashboard";
 import AdminRoute from "./AdminRoute";
+import AdminMessages from "./AdminMessages";
 import Login from "././Login";
 import "./index.css";
 
@@ -17,6 +18,7 @@ createRoot(document.getElementById("root")!).render(
 
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/messages" element={<AdminMessages />} />
         </Route>
       </Routes>
     </BrowserRouter>

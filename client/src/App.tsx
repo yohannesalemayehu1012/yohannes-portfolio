@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { getProjects, type Project } from "./services/projectService";
+import ContactForm from "./ContactForm";
 import "./App.css";
 
 const skills = [
@@ -320,26 +321,7 @@ function App() {
           </div>
         </section>
 
-        <section className="contact section container" id="contact">
-          <div className="contact-panel">
-            <p className="eyebrow">04 / GET IN TOUCH</p>
-            <h2>
-              Have an idea?
-              <br />
-              <span>Let's build it.</span>
-            </h2>
-            <p>
-              I'm interested in meaningful projects, collaboration, and
-              opportunities to learn and grow as a developer.
-            </p>
-            <a
-              className="button button-primary"
-              href="mailto:hello@example.com"
-            >
-              Send Me an Email <span>↗</span>
-            </a>
-          </div>
-        </section>
+        <ContactForm />
       </main>
 
       <footer className="footer container">

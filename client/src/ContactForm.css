@@ -1,0 +1,141 @@
+
+.contact-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 36px;
+  align-items: start;
+  padding: 32px;
+  border: 1px solid #263650;
+  border-radius: 14px;
+  background: #0d1526;
+  color: #e8eefb;
+}
+
+.contact-copy h2 {
+  margin: 12px 0;
+  font-size: clamp(24px, 4vw, 36px);
+  letter-spacing: -0.8px;
+}
+
+.contact-copy > p:last-child {
+  color: #aab8cf;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.contact-form {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.contact-field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 8px;
+  color: #c7d3e6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.contact-form input,
+.contact-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #293a55;
+  border-radius: 7px;
+  outline: none;
+  background: #080f1e;
+  color: #e8eefb;
+  font: inherit;
+  font-size: 13px;
+}
+
+.contact-form textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #3984ff;
+  box-shadow: 0 0 0 3px #3984ff20;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: #74839b;
+}
+
+.contact-submit {
+  justify-self: start;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 7px;
+  background: #3984ff;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.contact-submit:hover {
+  background: #5595ff;
+}
+
+.contact-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.contact-feedback {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.contact-feedback-success {
+  border-color: #225744;
+  background: #10291f;
+  color: #8be2bb;
+}
+
+.contact-feedback-error {
+  border-color: #65323e;
+  background: #2a1720;
+  color: #ffabb7;
+}
+
+.contact-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .contact-panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px;
+  }
+
+  .contact-field-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contact-submit {
+    width: 100%;
+  }
+}
