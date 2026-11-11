@@ -8,6 +8,7 @@ import AdminRoute from "./AdminRoute";
 import AdminMessages from "./AdminMessages";
 import Login from "././Login";
 import "./index.css";
+import "./ui-polish.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -118,8 +118,7 @@
 }
 
 .hero h1 span,
-.section-heading h2 span,
-.contact h2 span {
+.section-heading h2 span {
   color: var(--blue);
 }
 
@@ -400,8 +399,7 @@
 
 /* Shared section headings */
 
-.section-heading h2,
-.contact h2 {
+.section-heading h2 {
   margin: 14px 0;
   font-size: clamp(32px, 4.5vw, 49px);
   line-height: 1.2;
@@ -422,11 +420,14 @@
 /* About */
 
 .about {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.about-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
 }
 
 .about-content {
@@ -634,39 +635,6 @@
   font-size: 11px;
 }
 
-/* Contact */
-
-.contact {
-  padding-top: 40px;
-}
-
-.contact-panel {
-  padding: 65px 30px;
-  border: 1px solid rgba(92, 141, 255, 0.25);
-  border-radius: 14px;
-  background:
-    radial-gradient(ellipse at 85% 15%,
-      rgba(65, 111, 224, 0.18), transparent 45%),
-    linear-gradient(140deg, #101a2c, #0a1120);
-  text-align: center;
-}
-
-.contact h2 {
-  font-size: clamp(38px, 6vw, 57px);
-}
-
-.contact-panel > p:not(.eyebrow) {
-  max-width: 520px;
-  margin: 20px auto 25px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.9;
-}
-
-.contact-panel .eyebrow {
-  margin-top: 0;
-}
-
 /* Footer */
 
 .footer {
@@ -794,7 +762,7 @@
     font-size: 8px;
   }
 
-  .about {
+  .about-layout {
     grid-template-columns: 1fr;
     gap: 15px;
   }
@@ -819,10 +787,6 @@
 
   .project-description {
     min-height: auto;
-  }
-
-  .contact-panel {
-    padding: 50px 20px;
   }
 
   .footer {

@@ -64,102 +64,106 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="contact-panel" id="contact">
-      <div className="contact-copy">
-        <p className="section-eyebrow">GET IN TOUCH</p>
-        <h2>Have an idea? Let’s build it.</h2>
-        <p>
-          Have a project, internship opportunity, or collaboration in mind?
-          Send me a message.
-        </p>
+    <section className="contact section" id="contact">
+      <div className="container">
+        <div className="contact-panel">
+          <div className="contact-copy">
+            <p className="section-eyebrow eyebrow">GET IN TOUCH</p>
+            <h2>Have an idea? Let’s build it.</h2>
+            <p>
+              Have a project, internship opportunity, or collaboration in mind?
+              Send me a message.
+            </p>
+          </div>
+
+          <form className="contact-form" onSubmit={handleSubmit}>
+            <div className="contact-field-row">
+              <label>
+                Name
+                <input
+                  name="name"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  minLength={2}
+                  maxLength={80}
+                  required
+                  placeholder="Your name"
+                />
+              </label>
+
+              <label>
+                Email
+                <input
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  maxLength={254}
+                  required
+                  placeholder="you@example.com"
+                />
+              </label>
+            </div>
+
+            <label>
+              Subject
+              <input
+                name="subject"
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                minLength={3}
+                maxLength={120}
+                required
+                placeholder="What would you like to discuss?"
+              />
+            </label>
+
+            <label>
+              Message
+              <textarea
+                name="message"
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                minLength={10}
+                maxLength={5000}
+                rows={5}
+                required
+                placeholder="Tell me a little about your idea..."
+              />
+            </label>
+
+            {/* Honeypot: hidden from ordinary visitors and assistive technology. */}
+            <div className="contact-honeypot" aria-hidden="true">
+              <label>
+                Leave this field empty
+                <input
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(event) => setWebsite(event.target.value)}
+                />
+              </label>
+            </div>
+
+            {feedback && (
+              <p
+                className={`contact-feedback contact-feedback-${feedback.type}`}
+                role="status"
+                aria-live="polite"
+              >
+                {feedback.text}
+              </p>
+            )}
+
+            <button className="contact-submit" type="submit" disabled={sending}>
+              {sending ? "Sending..." : "Send message"}
+            </button>
+          </form>
+        </div>
       </div>
-
-      <form className="contact-form" onSubmit={handleSubmit}>
-        <div className="contact-field-row">
-          <label>
-            Name
-            <input
-              name="name"
-              autoComplete="name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              minLength={2}
-              maxLength={80}
-              required
-              placeholder="Your name"
-            />
-          </label>
-
-          <label>
-            Email
-            <input
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              maxLength={254}
-              required
-              placeholder="you@example.com"
-            />
-          </label>
-        </div>
-
-        <label>
-          Subject
-          <input
-            name="subject"
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
-            minLength={3}
-            maxLength={120}
-            required
-            placeholder="What would you like to discuss?"
-          />
-        </label>
-
-        <label>
-          Message
-          <textarea
-            name="message"
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            minLength={10}
-            maxLength={5000}
-            rows={5}
-            required
-            placeholder="Tell me a little about your idea..."
-          />
-        </label>
-
-        {/* Honeypot: hidden from ordinary visitors and assistive technology. */}
-        <div className="contact-honeypot" aria-hidden="true">
-          <label>
-            Leave this field empty
-            <input
-              name="website"
-              tabIndex={-1}
-              autoComplete="off"
-              value={website}
-              onChange={(event) => setWebsite(event.target.value)}
-            />
-          </label>
-        </div>
-
-        {feedback && (
-          <p
-            className={`contact-feedback contact-feedback-${feedback.type}`}
-            role="status"
-            aria-live="polite"
-          >
-            {feedback.text}
-          </p>
-        )}
-
-        <button className="contact-submit" type="submit" disabled={sending}>
-          {sending ? "Sending..." : "Send message"}
-        </button>
-      </form>
     </section>
   );
 }
