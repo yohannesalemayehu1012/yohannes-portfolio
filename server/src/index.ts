@@ -23,7 +23,7 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "20kb" }));
 app.use(cookieParser());
 
 // Reject cross-origin browser requests that attempt to change data.

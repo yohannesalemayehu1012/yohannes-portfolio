@@ -5,6 +5,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import projectRoutes from "./routes/projectRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -13,7 +14,7 @@ app.use(cors({
     origin: CLIENT_ORIGIN,
     credentials: true,
 }));
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "20kb" }));
 app.use(cookieParser());
 // Reject cross-origin browser requests that attempt to change data.
 app.use((req, res, next) => {
@@ -40,6 +41,7 @@ app.get("/api/health", (_req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/messages", messageRoutes);
 app.use((_req, res) => {
     res.status(404).json({
         success: false,
