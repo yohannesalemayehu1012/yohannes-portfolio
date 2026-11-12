@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getProjects, type Project } from "./services/projectService";
 import ContactForm from "./ContactForm";
 import "./App.css";
@@ -290,26 +291,41 @@ function App() {
               ) : (
                 projects.map((project) => (
                   <article className="project-card" key={project.id}>
-    <h3>{project.title}</h3>
+                    {project.featured && (
+                      <span className="featured-label">Featured</span>
+                    )}
 
-    <p>{project.description}</p>
+                    <p className="project-category">{project.category}</p>
 
-    <div className="project-technologies">
-      {project.technologies.map((technology) => (
-        <span key={technology}>{technology}</span>
-      ))}
-    </div>
+                    <h3>{project.title}</h3>
 
-    {project.githubUrl && (
-      <a
-        href={project.githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View source code ↗
-      </a>
-    )}
-  </article>
+                    <p>{project.description}</p>
+
+                    <div className="project-technologies">
+                      {project.technologies.map((technology) => (
+                        <span key={technology}>{technology}</span>
+                      ))}
+                    </div>
+
+                    <div className="project-card-actions">
+                      <Link
+                        to={`/projects/${project.id}`}
+                        className="project-details-link"
+                      >
+                        View Details ↗
+                      </Link>
+
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          GitHub ↗
+                        </a>
+                      )}
+                    </div>
+                  </article>
                 ))
               )}
             </div>

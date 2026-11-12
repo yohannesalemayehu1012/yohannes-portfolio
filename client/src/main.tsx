@@ -1,12 +1,14 @@
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import App from "./App";
+import ProjectDetails from "./ProjectDetails";
 import AdminDashboard from "./AdminDashboard";
 import AdminRoute from "./AdminRoute";
 import AdminMessages from "./AdminMessages";
-import Login from "././Login";
+import Login from "./Login";
+
 import "./index.css";
 import "./ui-polish.css";
 
@@ -15,6 +17,7 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
         <Route path="/admin/login" element={<Login />} />
 
         <Route element={<AdminRoute />}>
@@ -23,5 +26,5 @@ createRoot(document.getElementById("root")!).render(
         </Route>
       </Routes>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );
