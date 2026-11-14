@@ -1,6 +1,7 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { socialLinks } from "./data/socialLinks";
 import { getProjects, type Project } from "./services/projectService";
 import ContactForm from "./ContactForm";
 import "./App.css";
@@ -24,6 +25,9 @@ function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [projectError, setProjectError] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     let active = true;
@@ -56,6 +60,41 @@ function App() {
       active = false;
     };
   }, []);
+
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(
+      new Set(
+        projects
+          .map((project) => project.category.trim())
+          .filter(Boolean)
+      )
+    );
+
+    return ["All", ...uniqueCategories.sort()];
+  }, [projects]);
+
+  const filteredProjects = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return projects.filter((project) => {
+      const matchesCategory =
+        selectedCategory === "All" ||
+        project.category.toLowerCase() === selectedCategory.toLowerCase();
+
+      const searchableText = [
+        project.title,
+        project.description,
+        project.category,
+        ...project.technologies,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch = searchableText.includes(normalizedSearch);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [projects, searchTerm, selectedCategory]);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -136,6 +175,13 @@ function App() {
               </a>
               <a className="button button-secondary" href="#contact">
                 Get In Touch
+              </a>
+              <a
+                className="button button-resume"
+                href="/resume.pdf"
+                download="Yohannes-Alemayehu-CV.pdf"
+              >
+                Download CV <span>↓</span>
               </a>
             </div>
 
@@ -268,6 +314,63 @@ function App() {
               </p>
             </div>
 
+            {!loadingProjects && !projectError && projects.length > 0 && (
+              <div className="project-filters">
+                <div className="project-search">
+                  <label htmlFor="project-search">Search projects</label>
+
+                  <input
+                    id="project-search"
+                    type="search"
+                    placeholder="Search by name, technology..."
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                  />
+                </div>
+
+                <div className="category-filter">
+                  <p>Filter by category</p>
+
+                  <div className="category-buttons">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        type="button"
+                        className={
+                          selectedCategory === category
+                            ? "category-button active"
+                            : "category-button"
+                        }
+                        aria-pressed={selectedCategory === category}
+                        onClick={() => setSelectedCategory(category)}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="filter-results">
+                  <span>
+                    Showing {filteredProjects.length} of {projects.length} projects
+                  </span>
+
+                  {(searchTerm || selectedCategory !== "All") && (
+                    <button
+                      type="button"
+                      className="clear-filters"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedCategory("All");
+                      }}
+                    >
+                      Clear filters ×
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="projects-grid">
               {loadingProjects ? (
                 <p className="project-status" role="status">
@@ -288,8 +391,26 @@ function App() {
                 <p className="project-status">
                   No projects have been published yet.
                 </p>
+              ) : filteredProjects.length === 0 ? (
+                <div className="project-status no-project-results">
+                  <h3>No projects found</h3>
+                  <p>
+                    Try another search keyword or select a different category.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="retry-button"
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("All");
+                    }}
+                  >
+                    Show all projects
+                  </button>
+                </div>
               ) : (
-                projects.map((project) => (
+                filteredProjects.map((project) => (
                   <article className="project-card" key={project.id}>
                     {project.featured && (
                       <span className="featured-label">Featured</span>
@@ -336,9 +457,32 @@ function App() {
       </main>
 
       <footer className="footer container">
-        <a className="logo" href="#home">YA<span>.</span></a>
-        <p>Designed & built with care.</p>
-        <p>© {new Date().getFullYear()} Yohannes Alemayehu</p>
+        <div className="footer-top">
+          <a className="logo" href="#home">
+            YA<span>.</span>
+          </a>
+
+          <div className="footer-socials">
+            {socialLinks
+              .filter((social) => social.url.trim() !== "")
+              .map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit my ${social.name} profile`}
+                >
+                  {social.name} ↗
+                </a>
+              ))}
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>Designed & built with care.</p>
+          <p>© {new Date().getFullYear()} Yohannes Alemayehu</p>
+        </div>
       </footer>
     </>
   );
