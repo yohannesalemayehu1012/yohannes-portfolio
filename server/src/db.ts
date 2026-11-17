@@ -40,6 +40,75 @@ db.exec(`
   );
 `);
 
+// Store the public portfolio information.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS portfolio_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    name TEXT NOT NULL,
+    role TEXT NOT NULL,
+    headline TEXT NOT NULL,
+    introduction TEXT NOT NULL,
+    about TEXT NOT NULL,
+    email TEXT NOT NULL,
+    location TEXT NOT NULL,
+    resumeUrl TEXT NOT NULL,
+    githubUrl TEXT NOT NULL,
+    linkedinUrl TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// Create default settings only if they do not already exist.
+const settingsCount = db
+  .prepare("SELECT COUNT(*) AS count FROM portfolio_settings")
+  .get() as { count: number };
+
+if (settingsCount.count === 0) {
+  db.prepare(`
+    INSERT INTO portfolio_settings (
+      id,
+      name,
+      role,
+      headline,
+      introduction,
+      about,
+      email,
+      location,
+      resumeUrl,
+      githubUrl,
+      linkedinUrl
+    )
+    VALUES (
+      1,
+      @name,
+      @role,
+      @headline,
+      @introduction,
+      @about,
+      @email,
+      @location,
+      @resumeUrl,
+      @githubUrl,
+      @linkedinUrl
+    )
+  `).run({
+    name: "Yohannes Alemayehu",
+    role: "Software Engineering Student",
+    headline: "I build digital experiences for the real world.",
+    introduction:
+      "I'm a software engineering student passionate about full-stack development, machine learning, and creating useful digital products.",
+    about:
+      "I enjoy solving problems and turning ideas into practical software. My interests span frontend development, backend engineering, and applied artificial intelligence.",
+    email: "hello@example.com",
+    location: "Ethiopia",
+    resumeUrl: "/resume.pdf",
+    githubUrl: "https://github.com/yohannesalemayehu1012",
+    linkedinUrl: "",
+  });
+
+  console.log("Default portfolio settings created.");
+}
+
 // Insert starter projects only when the table is empty.
 const projectCount = db
   .prepare("SELECT COUNT(*) AS count FROM projects")

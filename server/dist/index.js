@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import projectRoutes from "./routes/projectRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -42,6 +43,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/settings", settingsRoutes);
 app.use((_req, res) => {
     res.status(404).json({
         success: false,

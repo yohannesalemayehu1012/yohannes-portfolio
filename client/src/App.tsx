@@ -1,8 +1,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { socialLinks } from "./data/socialLinks";
 import { getProjects, type Project } from "./services/projectService";
+import {
+  getPortfolioSettings,
+  type PortfolioSettings,
+} from "./services/settingsService";
 import ContactForm from "./ContactForm";
 import "./App.css";
 
@@ -19,15 +22,54 @@ const skills = [
   "Git & GitHub",
 ];
 
+const defaultSettings: PortfolioSettings = {
+  name: "Yohannes Alemayehu",
+  role: "Software Engineering Student",
+  headline: "I build digital experiences for the real world.",
+  introduction:
+    "I'm a software engineering student passionate about full-stack development, machine learning, and creating useful digital products through clean and thoughtful code.",
+  about:
+    "I enjoy solving problems and turning ideas into practical software. My interests span frontend development, backend engineering, and applied artificial intelligence.",
+  email: "hello@example.com",
+  location: "Ethiopia",
+  resumeUrl: "/resume.pdf",
+  githubUrl: "https://github.com/yohannesalemayehu1012",
+  linkedinUrl: "",
+};
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [projectError, setProjectError] = useState("");
+  const [settings, setSettings] =
+    useState<PortfolioSettings>(defaultSettings);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSettings() {
+      try {
+        const data = await getPortfolioSettings();
+
+        if (active) {
+          setSettings(data);
+        }
+      } catch (error) {
+        console.error("Unable to load portfolio settings:", error);
+      }
+    }
+
+    void loadSettings();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -132,7 +174,7 @@ function App() {
             <a href="#contact" onClick={closeMenu}>Contact</a>
             <a
               className="nav-cta"
-              href="mailto:hello@example.com"
+              href={`mailto:${settings.email}`}
               onClick={closeMenu}
             >
               Let's Talk <span>↗</span>
@@ -146,27 +188,17 @@ function App() {
           <div className="hero-content">
             <div className="availability">
               <span className="status-dot" />
-              SOFTWARE ENGINEERING STUDENT
+              {settings.role.toUpperCase()}
             </div>
 
             <p className="eyebrow">HELLO, I'M</p>
 
-            <h1>
-              Yohannes
-              <br />
-              <span>Alemayehu.</span>
-            </h1>
+            <h1>{settings.name}</h1>
 
-            <h2>
-              I build digital experiences
-              <br />
-              <span>for the real world.</span>
-            </h2>
+            <h2>{settings.headline}</h2>
 
             <p className="hero-description">
-              I'm a software engineering student passionate about full-stack
-              development, machine learning, and creating useful digital
-              products through clean and thoughtful code.
+              {settings.introduction}
             </p>
 
             <div className="hero-actions">
@@ -178,8 +210,10 @@ function App() {
               </a>
               <a
                 className="button button-resume"
-                href="/resume.pdf"
-                download="Yohannes-Alemayehu-CV.pdf"
+                href={settings.resumeUrl}
+                {...(settings.resumeUrl.startsWith("/")
+                  ? { download: "Yohannes-Alemayehu-CV.pdf" }
+                  : { target: "_blank", rel: "noopener noreferrer" })}
               >
                 Download CV <span>↓</span>
               </a>
@@ -260,14 +294,11 @@ function App() {
               </div>
 
               <div className="about-content">
+                <p>{settings.about}</p>
                 <p>
-                  I enjoy solving problems and turning ideas into practical
-                  software. My interests span frontend development, backend
-                  engineering, and applied artificial intelligence.
-                </p>
-                <p>
-                  My goal is to build reliable, accessible, and meaningful
-                  applications while continuously improving my engineering skills.
+                  {settings.location && `Based in ${settings.location}. `}
+                  Interested in building reliable, accessible, and meaningful
+                  applications.
                 </p>
                 <a className="text-link" href="#contact">
                   Let's work together <span>↗</span>
@@ -463,7 +494,10 @@ function App() {
           </a>
 
           <div className="footer-socials">
-            {socialLinks
+            {[
+              { name: "GitHub", url: settings.githubUrl },
+              { name: "LinkedIn", url: settings.linkedinUrl },
+            ]
               .filter((social) => social.url.trim() !== "")
               .map((social) => (
                 <a
@@ -481,7 +515,7 @@ function App() {
 
         <div className="footer-bottom">
           <p>Designed & built with care.</p>
-          <p>© {new Date().getFullYear()} Yohannes Alemayehu</p>
+          <p>© {new Date().getFullYear()} {settings.name}</p>
         </div>
       </footer>
     </>

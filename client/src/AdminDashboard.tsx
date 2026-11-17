@@ -224,9 +224,9 @@ function AdminDashboard() {
           <a href="#projects" className="admin-nav-item">
             <span>▤</span> Projects
           </a>
-          <a href="#settings" className="admin-nav-item">
+          <Link to="/admin/settings" className="admin-nav-item">
             <span>⚙</span> Settings
-          </a>
+          </Link>
         </nav>
 
         <button

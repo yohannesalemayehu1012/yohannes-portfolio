@@ -7,6 +7,7 @@ import ProjectDetails from "./ProjectDetails";
 import AdminDashboard from "./AdminDashboard";
 import AdminRoute from "./AdminRoute";
 import AdminMessages from "./AdminMessages";
+import AdminSettings from "./AdminSettings";
 import Login from "./Login";
 
 import "./index.css";
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>
