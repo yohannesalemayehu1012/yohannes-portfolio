@@ -9,6 +9,10 @@ import {
   type Project,
   type ProjectInput,
 } from "./services/projectService";
+import {
+  getDashboardData,
+  type DashboardData,
+} from "./services/dashboardService";
 import { logout } from "./services/authService";
 import "./AdminDashboard.css";
 
@@ -25,8 +29,11 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dashboardError, setDashboardError] = useState("");
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
 
@@ -58,9 +65,31 @@ function AdminDashboard() {
     }
   }, [navigate]);
 
+  const loadDashboardData = useCallback(async () => {
+    setDashboardLoading(true);
+    setDashboardError("");
+
+    try {
+      const data = await getDashboardData();
+      setDashboardData(data);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unable to load dashboard data.";
+
+      setDashboardError(message);
+
+      if (message.toLowerCase().includes("authentication")) {
+        navigate("/admin/login", { replace: true });
+      }
+    } finally {
+      setDashboardLoading(false);
+    }
+  }, [navigate]);
+
   useEffect(() => {
     void loadProjects();
-  }, [loadProjects]);
+    void loadDashboardData();
+  }, [loadDashboardData, loadProjects]);
 
   const filteredProjects = projects.filter((project) => {
     const query = search.trim().toLowerCase();
@@ -70,8 +99,6 @@ function AdminDashboard() {
       project.category.toLowerCase().includes(query)
     );
   });
-
-  const featuredCount = projects.filter((project) => project.featured).length;
 
   function openCreateForm() {
     setEditingProject(null);
@@ -155,6 +182,7 @@ function AdminDashboard() {
       setTechnologyText("");
 
       await loadProjects();
+      await loadDashboardData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to save project.");
     } finally {
@@ -179,6 +207,7 @@ function AdminDashboard() {
       setProjects((current) =>
         current.filter((item) => item.id !== project.id),
       );
+      await loadDashboardData();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to delete project.";
@@ -261,7 +290,7 @@ function AdminDashboard() {
         <section id="overview" className="admin-welcome">
           <div>
             <p className="admin-eyebrow">YOUR CONTROL CENTER</p>
-            <h2>Manage your work.</h2>
+            <h2>Welcome back. Manage your work.</h2>
             <p>
               Create, update, and organize the projects displayed on your
               public portfolio.
@@ -270,27 +299,60 @@ function AdminDashboard() {
           <div className="admin-welcome-symbol">{"{ }"}</div>
         </section>
 
-        <section className="admin-stats" aria-label="Project statistics">
+        <section className="admin-stats" aria-label="Dashboard statistics">
           <article className="admin-stat-card">
             <span className="admin-stat-label">Total projects</span>
-            <strong>{loading ? "—" : projects.length}</strong>
+            <strong>
+              {dashboardLoading
+                ? "—"
+                : dashboardData?.statistics.totalProjects ?? "—"}
+            </strong>
             <span className="admin-stat-note">Projects in your database</span>
           </article>
 
           <article className="admin-stat-card">
             <span className="admin-stat-label">Featured projects</span>
-            <strong>{loading ? "—" : featuredCount}</strong>
+            <strong>
+              {dashboardLoading
+                ? "—"
+                : dashboardData?.statistics.featuredProjects ?? "—"}
+            </strong>
             <span className="admin-stat-note">Marked as featured</span>
           </article>
 
           <article className="admin-stat-card">
-            <span className="admin-stat-label">API status</span>
-            <strong className="admin-status-value">
-              {loading ? "Checking" : error ? "Check API" : "Connected"}
+            <span className="admin-stat-label">Total messages</span>
+            <strong>
+              {dashboardLoading
+                ? "—"
+                : dashboardData?.statistics.totalMessages ?? "—"}
             </strong>
-            <span className="admin-stat-note">Project API response</span>
+            <span className="admin-stat-note">Messages received</span>
+          </article>
+
+          <article className="admin-stat-card">
+            <span className="admin-stat-label">Unread messages</span>
+            <strong>
+              {dashboardLoading
+                ? "—"
+                : dashboardData?.statistics.unreadMessages ?? "—"}
+            </strong>
+            <span className="admin-stat-note">Awaiting your response</span>
           </article>
         </section>
+
+        {dashboardError && (
+          <div className="admin-feedback admin-feedback-error" role="alert">
+            <span>{dashboardError}</span>
+            <button
+              type="button"
+              onClick={() => void loadDashboardData()}
+              aria-label="Retry loading dashboard data"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {notice && (
           <div className="admin-feedback admin-feedback-success" role="status">
@@ -309,6 +371,87 @@ function AdminDashboard() {
             </button>
           </div>
         )}
+
+        <section className="admin-activity-section" aria-label="Recent activity">
+          <div className="admin-section-heading">
+            <div>
+              <p className="admin-eyebrow">LATEST UPDATES</p>
+              <h2>Recent activity</h2>
+            </div>
+          </div>
+
+          <div className="admin-activity-grid">
+            <article className="admin-activity-card">
+              <div className="admin-activity-heading">
+                <h3>Recent projects</h3>
+                <a href="#projects">Manage projects</a>
+              </div>
+              {dashboardLoading ? (
+                <p className="admin-message" role="status">Loading recent projects...</p>
+              ) : dashboardData ? (
+                dashboardData.recentProjects.length > 0 ? (
+                  <ul className="admin-activity-list">
+                    {dashboardData.recentProjects.map((project) => (
+                      <li key={project.id}>
+                        <div>
+                          <strong>{project.title}</strong>
+                          <span>{project.category}</span>
+                        </div>
+                        <span
+                          className={`admin-project-status ${
+                            project.featured ? "featured" : "standard"
+                          }`}
+                        >
+                          {project.featured ? "Featured" : "Standard"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="admin-message">No projects yet.</p>
+                )
+              ) : (
+                <p className="admin-message">Recent projects are unavailable.</p>
+              )}
+            </article>
+
+            <article className="admin-activity-card">
+              <div className="admin-activity-heading">
+                <h3>Recent messages</h3>
+                <Link to="/admin/messages">View messages</Link>
+              </div>
+              {dashboardLoading ? (
+                <p className="admin-message" role="status">Loading recent messages...</p>
+              ) : dashboardData ? (
+                dashboardData.recentMessages.length > 0 ? (
+                  <ul className="admin-activity-list">
+                    {dashboardData.recentMessages.map((message) => (
+                      <li key={message.id}>
+                        <div>
+                          <strong>{message.subject}</strong>
+                          <span>
+                            {message.name} · {message.email}
+                          </span>
+                        </div>
+                        <span
+                          className={`admin-message-status ${
+                            message.isRead ? "read" : "unread"
+                          }`}
+                        >
+                          {message.isRead ? "Read" : "Unread"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="admin-message">No messages yet.</p>
+                )
+              ) : (
+                <p className="admin-message">Recent messages are unavailable.</p>
+              )}
+            </article>
+          </div>
+        </section>
 
         <section id="projects" className="admin-projects-section">
           <div className="admin-section-heading">

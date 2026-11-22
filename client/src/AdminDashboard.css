@@ -241,7 +241,7 @@
 
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-top: 22px;
 }
@@ -277,6 +277,108 @@
   color: var(--admin-muted);
   font-size: 10px;
   line-height: 1.6;
+}
+
+.admin-activity-section {
+  margin-top: 38px;
+}
+
+.admin-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.admin-activity-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 9px;
+  background: var(--admin-panel);
+}
+
+.admin-activity-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-activity-heading h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.admin-activity-heading a {
+  color: #8db9ff;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.admin-activity-heading a:hover {
+  text-decoration: underline;
+}
+
+.admin-activity-list {
+  margin: 0;
+  padding: 0 17px;
+  list-style: none;
+}
+
+.admin-activity-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 66px;
+  border-bottom: 1px solid #1c283c;
+}
+
+.admin-activity-list li:last-child {
+  border-bottom: 0;
+}
+
+.admin-activity-list li > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.admin-activity-list li strong {
+  overflow: hidden;
+  color: var(--admin-text);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-activity-list li > div > span {
+  overflow: hidden;
+  color: var(--admin-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-message-status {
+  flex-shrink: 0;
+  padding: 5px 7px;
+  border-radius: 5px;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.admin-message-status.unread {
+  background: #3a2028;
+  color: #ffabb7;
+}
+
+.admin-message-status.read {
+  background: #202c3e;
+  color: #aab9cf;
 }
 
 .admin-projects-section {
@@ -569,6 +671,7 @@
   }
 
   .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -621,6 +724,10 @@
   }
 
   .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-activity-grid {
     grid-template-columns: 1fr;
   }
 
