@@ -7,6 +7,7 @@ import {
   type PortfolioSettings,
 } from "./services/settingsService";
 import ContactForm from "./ContactForm";
+import SEO from "./components/SEO";
 import "./App.css";
 
 const skills = [
@@ -142,6 +143,11 @@ function App() {
 
   return (
     <>
+      <SEO
+        title="Yohannes Alemayehu | Full-Stack Developer"
+        description="I'm Yohannes Alemayehu, a software engineering student interested in full-stack development, machine learning, and building useful software."
+      />
+
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>

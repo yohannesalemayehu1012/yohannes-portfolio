@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProjects, type Project } from "./services/projectService";
+import SEO from "./components/SEO";
 import "./ProjectDetails.css";
 
 function ProjectDetails() {
@@ -80,6 +81,11 @@ function ProjectDetails() {
           </div>
         ) : (
           <article className="project-details-content">
+            <SEO
+              title={`${project.title} | Yohannes Alemayehu`}
+              description={project.description}
+            />
+
             <p className="project-details-eyebrow">
               PROJECT / {project.category}
             </p>
